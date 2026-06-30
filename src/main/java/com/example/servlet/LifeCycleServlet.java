@@ -12,6 +12,9 @@ import java.io.IOException;
 @WebServlet({"/lifecycle", "/lifecycle2"}) // 배열을 넣어서 여러개의 경로를 연결할 수도 있다
 public class LifeCycleServlet extends HttpServlet { // 1단계
 
+    // 하나의 서블릿이 싱글톤의 형태로 -> 서블릿 컨테이너에 '등록'되어서 존재함
+    private int count = 0;
+
     @Override
     public void init() throws ServletException {
 //        super.init(); // 지워도 된다
@@ -34,6 +37,16 @@ public class LifeCycleServlet extends HttpServlet { // 1단계
         System.out.println("LifeCycleServlet.doGet");
         resp.setContentType("text/html; charset=utf-8");
         resp.getWriter().println("GET을 통해 접속했군요");
+        for (int i = 0; i < 3_000; i++) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            count++;
+        }
+        // 상태 공유, race condition을 조심해야한다
+        System.out.println("count = " + count);
     }
 
     @Override
